@@ -1,5 +1,6 @@
 import people
 import pandas as pd
+import invoice
 from invoice_email import InvoiceEmail
 
 
@@ -10,11 +11,15 @@ num_of_customers = customer_file.shape[0]
 for i in range(num_of_customers):
     customers.append(people.Customer(i))
 
-email = InvoiceEmail(owner, customers[0])
-email.replace_key_words()
+invoice = invoice.Invoice(customers[0], owner)
+invoice.test()
+# email = InvoiceEmail(owner, customers[0])
+# email.replace_key_words()
+# print(email.subject)
 # print(email.body)
-
-for customer in customers:
-    for key, value in vars(customer).items():
-        print(key, value)
-    print()
+# print(email.announcement)
+#
+# for customer in customers:
+#     for key, value in vars(customer).items():
+#         print(key, value)
+#     print()

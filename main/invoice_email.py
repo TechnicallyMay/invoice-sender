@@ -1,4 +1,5 @@
-from datetime import datetime
+import translate
+import re
 
 
 class InvoiceEmail():
@@ -6,37 +7,42 @@ class InvoiceEmail():
     def __init__(self, owner, customer):
         self.owner = owner
         self.customer = customer
-        self.body_file_name = "../data/message.txt"
-        with open(self.body_file_name, 'r') as f:
+        body_file_name = "../data/message.txt"
+        with open(body_file_name, 'r') as f:
             self.body = f.read()
-        self.replace_key_words()
+        self.body = translate.translate(self.body, self.customer.data, self.owner.data)
+        self.subject = self.find_tag("subject")
+        self.remove_tagged("subject")
+        self.remove_tags("subject")
+        if self.remove_tags("attach_invoice"):
+            self.announcement = False
+        else:
+            self.announcement = True
 
 
-    def find_key_words(self):
-        #This is used to find all tags in text, so user can
-        #use variables in each message
-        body = self.body.split()
-        key_words = [word for word in body if '<' in word]
-        for i, word in enumerate(key_words):
-            for j, letter in enumerate(word):
-                if letter == '<':
-                    key_words[i] = word[j:]
-                    word = word[j:]
-                if letter == '>':
-                    key_words[i] = word[:j + 1]
-        return key_words
+    def find_tag(self, tag):
+        re_start = re.escape("<%s/>" % tag)
+        re_end = re.escape("<\%s>" % tag)
+        search = "%s(.*?)%s" % (re_start, re_end)
+        result = re.search(search, self.body, re.S)
+        return result.group(1)
 
 
-    def replace_key_words(self):
-        c = self.customer.data
-        o = self.owner.data
-        translations = [("<customer.first_name>", c["First"]),
-                        ("<customer.number_of_students>", c["Students"]),
-                        ("<customer.monthly_rate>", c["Rate"]),
-                        ("<customer.num_of_lessons>", c["Lessons"]),
-                        ("<owner.full_name>", o["Name"]),
-                        ("<owner.cell_number>", o["Cell"]),
-                        ("<date>", datetime.now().strftime("%B %d, %Y")),
-                        ("<month>", datetime.now().strftime("%B"))]
-        for translation in translations:
-            self.body = self.body.replace(translation[0], str(translation[1]))
+    def remove_tagged(self, tag):
+        to_remove = self.find_tag(tag)
+        self.body = self.body.replace(to_remove, "")
+
+
+    def remove_tags(self, tag):
+        start = "<%s/>" % tag
+        if tag != "subject":
+            start = "\n" + start
+        end = "<\%s>\n" % tag
+        new = self.body
+        for t in (start, end):
+            new = new.replace(t, "")
+        if new != self.body:
+            self.body = new
+            return True
+        else:
+            return False

@@ -25,5 +25,4 @@ class Customer(Person):
         self.file_name = "../data/customers.xlsx"
         self.index = index
         super().__init__()
-        self.set_defaults()
-        
+    
