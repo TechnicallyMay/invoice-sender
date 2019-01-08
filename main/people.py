@@ -35,8 +35,12 @@ class Customer(Person):
 
 
     def find_charges(self):
+        fee_code_file_name = "../data/fee_codes.xlsx"
+        file = pd.read_excel(fee_code_file_name)
+        data = file.to_dict()
+        print(data)
         charges = []
-        for i in range(self.data["Students"] + 1):
+        for i in range(self.data["Students"]):
             charges.append([self.data["Lessons"], "Lessons", self.data["Rate"]])
         try:
             for charge in self.data["Fees"].split(","):
@@ -44,12 +48,9 @@ class Customer(Person):
                 charge_qty = charge[0]
                 charge_type = charge[1]
                 charge_amount = charge[2]
-                if charge_type == "B":
-                    charge_type = "Books"
-                elif charge_type == "L":
-                    charge_type = "Late Fees"
-                else:
-                    charge_type = "Other"
+                for i in range(len(data["Code"])):
+                    if charge_type == data["Code"][i]:
+                        charge_type = data["Description"][i]
                 charges.append([charge_qty, charge_type, charge_amount])
         except AttributeError:
             return charges
