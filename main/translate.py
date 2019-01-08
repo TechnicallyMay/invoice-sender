@@ -1,6 +1,16 @@
 from datetime import datetime
 
 
+months = ["January", "Febuary", "March", "April",
+          "May", "June", "July", "August", "September",
+          "October", "November", "December"]
+current_month = datetime.now().strftime("%B")
+next_month = ""
+for i, month in enumerate(months):
+    if current_month == month:
+        next_month = months[(i + 1) % len(months)]
+
+
 def translate(text, c, o):
     translations = [("<customer.first_name>", c["First"]),
                     ("<customer.full_name>", c["Name"]),
@@ -12,7 +22,9 @@ def translate(text, c, o):
                     ("<owner.address>", o["Address"]),
                     ("<owner.city_state_zip>", o["City, State, Zip"]),
                     ("<date>", datetime.now().strftime("%B %d, %Y")),
-                    ("<month>", datetime.now().strftime("%B")),
+                    ("<month>", current_month),
+                    ("<next_month>", next_month),
+                    ("<due_date>", o["Due Date"]),
                     ("<header>", o["Header"]),
                     ("<title>", o["Title"])]
     for translation in translations:
