@@ -24,9 +24,6 @@ class InvoiceEmail():
             self.announcement = False
         else:
             self.announcement = True
-        if self.customer.charges == []:
-            self.remove_tagged("fees")
-        self.remove_tags("fees")
 
 
     def find_tag(self, tag):
