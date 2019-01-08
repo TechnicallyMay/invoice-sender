@@ -1,5 +1,11 @@
 import translate
 import re
+from invoice import Invoice
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
 
 class InvoiceEmail():
@@ -18,6 +24,9 @@ class InvoiceEmail():
             self.announcement = False
         else:
             self.announcement = True
+        if self.customer.charges == []:
+            self.remove_tagged("fees")
+        self.remove_tags("fees")
 
 
     def find_tag(self, tag):
@@ -46,3 +55,36 @@ class InvoiceEmail():
             return True
         else:
             return False
+
+
+    def send(self):
+        fromaddr = self.owner.data["Email"]
+        toaddr = self.customer.data["Email"]
+        msg = MIMEMultipart()
+        msg['From'] = fromaddr
+        msg['To'] = toaddr
+        msg['Subject'] = self.subject
+        body = self.body
+        msg.attach(MIMEText(body, 'plain'))
+        if not self.announcement:
+            invoice = Invoice(self.customer, self.owner)
+            filename = "../data/temp.docx"
+            attachment = open(filename, "rb")
+            p = MIMEBase('application', 'octet-stream')
+            p.set_payload((attachment).read())
+            encoders.encode_base64(p)
+            p.add_header('Content-Disposition', "attachment; filename= Invoice.docx")
+            msg.attach(p)
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        logged_in = False
+        while not logged_in:
+            try:
+                s.login(fromaddr, self.owner.password)
+                logged_in = True
+            except:
+                print("Incorrect password, or account security too high.")
+                self.owner.get_pass()
+        text = msg.as_string()
+        s.sendmail(fromaddr, toaddr, text)
+        s.quit()
