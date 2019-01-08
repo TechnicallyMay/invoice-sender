@@ -33,8 +33,8 @@ class Invoice():
         charge_table = self.template.tables[1]
         for i in range(1, len(charge_table.rows) - 1):
             try:
-                charge = charges.pop(i)
-                charge_total = int(charge[0]) * int(charge[2])
+                charge = charges.pop(0)
+                charge_total = float(charge[0]) * float(charge[2])
                 self.total += charge_total
                 charge.append(charge_total)
             except IndexError:
