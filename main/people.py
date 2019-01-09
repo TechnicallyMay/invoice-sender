@@ -37,10 +37,12 @@ class Customer(Person):
         self.index = index
         super().__init__()
         self.owner = owner
-        self.total = 0
-        self.charges = self.find_charges()
-        self.invoice = invoice.Invoice(self, self.owner)
         self.email = invoice_email.InvoiceEmail(self, self.owner)
+        self.send_invoice = self.data["Attach Invoice?"].lower() == "yes" and self.email.announcement
+        if self.send_invoice:
+            self.total = 0
+            self.charges = self.find_charges()
+            self.invoice = invoice.Invoice(self, self.owner)
 
 
     def find_charges(self):
