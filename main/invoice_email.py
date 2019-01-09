@@ -20,10 +20,7 @@ class InvoiceEmail():
         self.subject = self.find_tag("subject")
         self.remove_tagged("subject")
         self.remove_tags("subject")
-        if self.remove_tags("attach_invoice"):
-            self.announcement = False
-        else:
-            self.announcement = True
+        self.announcement = self.remove_tags("attach_invoice")
 
 
     def find_tag(self, tag):
