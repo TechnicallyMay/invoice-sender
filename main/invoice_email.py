@@ -10,13 +10,13 @@ from email import encoders
 
 class InvoiceEmail():
 
-    def __init__(self, owner, customer):
+    def __init__(self, customer, owner):
         self.owner = owner
         self.customer = customer
         body_file_name = "../data/message.txt"
         with open(body_file_name, 'r') as f:
             self.body = f.read()
-        self.body = translate.translate(self.body, self.customer.data, self.owner.data)
+        self.body = translate.translate(self.body, self.owner.data, self.customer.data)
         self.subject = self.find_tag("subject")
         self.remove_tagged("subject")
         self.remove_tags("subject")
