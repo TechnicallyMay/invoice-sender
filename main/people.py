@@ -38,7 +38,7 @@ class Customer(Person):
         super().__init__()
         self.owner = owner
         self.email = invoice_email.InvoiceEmail(self, self.owner)
-        self.send_invoice = self.data["Attach Invoice?"].lower() == "yes" and self.email.announcement
+        self.send_invoice = self.data["Attach Invoice?"].lower() == "yes" and not self.email.announcement
         if self.send_invoice:
             self.total = 0
             self.charges = self.find_charges()
