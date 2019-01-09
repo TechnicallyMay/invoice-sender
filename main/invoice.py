@@ -7,10 +7,12 @@ class Invoice():
     def __init__(self, customer, owner):
         self.customer = customer
         self.owner = owner
+        name = self.customer.data["Name"].replace(" ", "").lower()
+        self.file_name = "../data/temp/%d%s.docx" % (self.customer.index, name)
         self.template = Document("../data/invoice_template.docx")
         self.add_charges(self.customer.charges)
         self.replace_key_words()
-        self.template.save("../data/temp.docx")
+        self.template.save(self.file_name)
 
 
     def replace_key_words(self):
