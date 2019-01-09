@@ -11,11 +11,21 @@ customer_file = pd.read_excel("../data/customers.xlsx")
 num_of_customers = customer_file.shape[0]
 for i in range(num_of_customers):
     customers.append(people.Customer(i, owner))
-    print(customers[i].data["Name"], customers[i].total)
 
-# print("Sending following emails: ")
-# for customer in customers:
-#     print(customer.data["Name"])
+print("Sending following emails: \n")
+any_invoices = False
+for customer in customers:
+    if customer.send_invoice:
+        any_invoices = True
+        print("Invoice to %s:" % (customer.data["Name"]))
+        for charge in customer.charges:
+            print(charge[1], end = ": ")
+            print("${:0.2f}".format(charge[3]))
+        print("Total: ${:0.2f}\n".format(customer.total))
+    else:
+        print("Announcement to %s\n" % customer.data["Name"])
+if any_invoices:
+    print("Check 'temp' folder to see invoices.")
 #
 # done = False
 # while not done:
@@ -30,4 +40,6 @@ for i in range(num_of_customers):
 #         print("Invalid choice, try again.")
 #     else:
 #         done = True
-# os.remove("../data/temp.docx")
+for customer in customers:
+    if customer.send_invoice:
+        os.remove(customer.invoice.file_name)
