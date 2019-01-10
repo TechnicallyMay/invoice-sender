@@ -1,6 +1,5 @@
 import translate
 import re
-from invoice import Invoice
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -10,20 +9,16 @@ from email import encoders
 
 class InvoiceEmail():
 
-    def __init__(self, owner, customer):
+    def __init__(self, customer, owner):
         self.owner = owner
         self.customer = customer
         body_file_name = "../data/message.txt"
         with open(body_file_name, 'r') as f:
             self.body = f.read()
-        self.body = translate.translate(self.body, self.customer.data, self.owner.data)
+        self.body = translate.translate(self.body, self.owner.data, self.customer.data)
         self.subject = self.find_tag("subject")
         self.remove_tagged("subject")
-        self.remove_tags("subject")
-        if self.remove_tags("attach_invoice"):
-            self.announcement = False
-        else:
-            self.announcement = True
+        self.announcement = not self.remove_tags("attach_invoice")
 
 
     def find_tag(self, tag):
@@ -37,6 +32,7 @@ class InvoiceEmail():
     def remove_tagged(self, tag):
         to_remove = self.find_tag(tag)
         self.body = self.body.replace(to_remove, "")
+        self.remove_tags(tag)
 
 
     def remove_tags(self, tag):
@@ -64,9 +60,7 @@ class InvoiceEmail():
         body = self.body
         msg.attach(MIMEText(body, 'plain'))
         if not self.announcement:
-            invoice = Invoice(self.customer, self.owner)
-            filename = "../data/temp.docx"
-            attachment = open(filename, "rb")
+            attachment = open(self.customer.invoice.file_name, "rb")
             p = MIMEBase('application', 'octet-stream')
             p.set_payload((attachment).read())
             encoders.encode_base64(p)
