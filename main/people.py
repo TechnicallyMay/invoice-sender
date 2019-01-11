@@ -64,3 +64,16 @@ class Customer(Person):
                 charges.append([charge_qty, charge_type, charge_amount])
                 self.total += charge_qty * charge_amount
         return charges
+
+
+    def confirm(self):
+        if self.send_invoice:
+            print("Invoice to %s (%s):" % (self.data["Name"], self.data["Email"]))
+            for charge in self.charges:
+                print(charge[1], end = ": ")
+                print("${:0.2f}".format(charge[3]))
+            print("Total: ${:0.2f}\n".format(self.total))
+            return True
+        else:
+            print("Announcement (no invoice) to %s\n" % self.data["Name"])
+            return False
