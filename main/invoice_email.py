@@ -59,7 +59,7 @@ class InvoiceEmail():
         msg['Subject'] = self.subject
         body = self.body
         msg.attach(MIMEText(body, 'plain'))
-        if not self.announcement:
+        if not self.announcement and self.customer.send_invoice:
             attachment = open(self.customer.invoice.file_name, "rb")
             p = MIMEBase('application', 'octet-stream')
             p.set_payload((attachment).read())
