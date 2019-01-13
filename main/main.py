@@ -25,13 +25,21 @@ while not done:
             print("Sending email to %s." % customer.data["Name"])
             #customer.email.send()
             if customer.send_invoice:
-                os.remove(customer.invoice.file_name)
+                deleted = False
+                while not deleted:
+                    try:
+                        os.remove(customer.invoice.file_name)
+                        deleted = True
+                    except PermissionError:
+                        print("\nPlease close invoice and try again.")
+                        _ = input("Press enter when invoice has been closed.")
             print("Sent")
-        backup.backup(customers, input("Name backup: "))
+        backup.backup(customers)
         done = True
     elif choice != "n":
         print("Invalid choice, try again.")
     else:
         for customer in customers:
-            os.remove(customer.invoice.file_name)
+            if customer.send_invoice:
+                os.remove(customer.invoice.file_name)
         done = True
