@@ -23,7 +23,7 @@ while not done:
     if choice == "y":
         for customer in customers:
             print("Sending email to %s." % customer.data["Name"])
-            #customer.email.send()
+            customer.email.send()
             if customer.send_invoice:
                 deleted = False
                 while not deleted:

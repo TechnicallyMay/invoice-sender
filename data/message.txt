@@ -1,0 +1,8 @@
+<subject/>Invoice for <month><\subject>
+Hello!
+
+This is an example message to <customer.full_name>.
+
+Thank you!
+<owner.full_name>
+<owner.cell_number>
